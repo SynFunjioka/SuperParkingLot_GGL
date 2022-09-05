@@ -2,9 +2,11 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CurrentCarsComponent } from './current-cars.component';
 
-import { ButtonModule } from '@app/shared';
+import { ButtonModule, ControlsModule, } from '@app/shared';
 
 import { MatTableModule } from '@angular/material/table';
+
+import { ReactiveFormsModule } from '@angular/forms';
 
 
 
@@ -15,7 +17,8 @@ import { MatTableModule } from '@angular/material/table';
   imports: [
     CommonModule,
     MatTableModule,
-    ButtonModule
+    ButtonModule,
+    ControlsModule
   ],
   exports: [
     CurrentCarsComponent

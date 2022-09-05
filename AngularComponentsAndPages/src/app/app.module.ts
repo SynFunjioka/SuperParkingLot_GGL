@@ -21,6 +21,7 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 const StoreDevTools = !environment.production ? StoreDevtoolsModule.instrument({ maxAge: 50 }) : [];
 
 import { reducers, effect } from './store';
+import { ParkingLotService } from './services/parkingLot/parking-lot.service';
 //This is used for Date range (APP_DATE_FORMATS)
 const APP_DATE_FORMATS: MatDateFormats = {
   parse: {
@@ -60,6 +61,7 @@ const APP_DATE_FORMATS: MatDateFormats = {
     //this is used for date range
   ],
   providers: [
+    ParkingLotService,
     { provide: MAT_DATE_LOCALE, useValue: 'en-GB' }, //this is used for date range component,
     { provide: MAT_DATE_FORMATS, useValue: APP_DATE_FORMATS } //this is used for date range component
   ],

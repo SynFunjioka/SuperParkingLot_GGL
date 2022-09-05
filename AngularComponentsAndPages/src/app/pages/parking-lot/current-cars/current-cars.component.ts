@@ -1,13 +1,17 @@
 import { Component, OnInit } from '@angular/core';
-import { CheckIn, CarData, CostModel } from '@app/models/frontend';
+import { CheckIn, CarData, CostModel, ControlItem } from '@app/models/frontend';
 import { CheckIn as CheckInB, CarData as CarDataB } from '@app/models/backend';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { map, pipe, Observable, of } from 'rxjs';
+import { map, pipe, Observable, of, Subscription } from 'rxjs';
 import { ParkingLotService } from '@app/services/parkingLot/parking-lot.service';
 
 import { Store } from '@ngrx/store';
 import * as fromRoot from '@app/store';
 import * as fromDictionaries from '@app/store/parking-lot';
+
+import { FormBuilder, FormGroup, Validators } from '@angular/forms'
+import { NotificationService } from '@app/services';
+import { regex, regexErrors, markFormGroupTouched } from '@app/shared';
 
 @Component({
   selector: 'app-current-cars',
@@ -16,6 +20,15 @@ import * as fromDictionaries from '@app/store/parking-lot';
 })
 export class CurrentCarsComponent implements OnInit {
 
+  form!: FormGroup;
+  isInline!: boolean;
+  showSpinner: boolean = false;
+  regexError = regexErrors;
+  typeRadios!: ControlItem[];
+
+  newCheckIn!: boolean;
+  carNotFound!: boolean;
+
   checkIn: CheckInB[] = [
     // { car: { id: 1, licensePlate: "D6X-W2D", type: "Oficial" }, checkInHour: new Date().toTimeString(), checkOutHour: null, amount: null },
     // { car: { id: 2, licensePlate: "CGE-6D5", type: "Residencial" }, checkInHour: new Date().toTimeString(), checkOutHour: null, amount: null },
@@ -23,6 +36,7 @@ export class CurrentCarsComponent implements OnInit {
     // { car: { id: 4, licensePlate: "SCV-SD2", type: "Residencial" }, checkInHour: new Date().toTimeString(), checkOutHour: null, amount: null },
   ];
 
+  checkInF$!: Subscription;
   checkInF!: CheckIn[];
 
   carData: CarDataB[] = [];
@@ -30,57 +44,71 @@ export class CurrentCarsComponent implements OnInit {
 
   displayedColumns: string[] = ["plate", "checkIn", "type", "actions"];
 
-  constructor(private parkingLotService: ParkingLotService, private store: Store<fromRoot.State>) {
+  constructor(private parkingLotService: ParkingLotService, private store: Store<fromRoot.State>,
+    private fb: FormBuilder, private notification: NotificationService
+  ) {
     setTimeout(() => { }, 500);
 
   }
 
-  async ngOnInit() {
-    this.store.dispatch(new fromDictionaries.Read());
-
-    this.parkingLotService.getCars().subscribe(res => {
-      console.log("Cars:", res);
-      this.carData = res;
-    });
-
-    this.parkingLotService.getRecords().subscribe(res => {
-      if (!res) return;
-      console.log("Records:", res);
-
-      let arr: CheckIn[] = [];
-      res.forEach(element => {
-        let carData: CarDataB = this.carData.filter(carID => carID.id == element.fk_CarData)[0];
-        let carType: CostModel = this.carTypes.filter(type => type.id == carData.type)[0];
-
-        let newCar: CarData = {
-          ...carData,
-          type: carType
-        }
-
-        let checkIn: CheckIn = {
-          ...element,
-          checkInTime: new Date(element.checkInTime),
-          checkOutTime: -62135573004000 != new Date("0001-01-01T00:00:00").getTime() && element.checkOutTime ? new Date(element.checkOutTime) : null,
-          car: newCar
-        }
-
-        console.log(checkIn.checkInTime);
-        if (checkIn.checkOutTime) console.log(new Date(checkIn.checkOutTime).getTime());
-        //console.log("Front end data:", checkIn)
-        arr.push(checkIn);
-        //this.checkInF = of
-      })
-      this.checkIn = res;
-      this.checkInF = arr;
-      console.log("Front end data:", this.checkInF)
-      //console.log("Records:", this.checkIn);
-
-    })
-
-    this.parkingLotService.getTypes().subscribe(res => {
-      console.log("Types:", res);
-      this.carTypes = res;
-    })
+  CheckIn(): void {
+    this.newCheckIn = !this.newCheckIn;
   }
 
+  ngOnInit() {
+    //this.checkInF = this.parkingLotService.records;
+
+    this.form = this.fb.group({
+      input: [null, {
+        updateOn: 'blur',
+        validators: [
+          Validators.required,
+          Validators.minLength(3),
+          Validators.pattern(regex.number)
+        ]
+      }],
+      password: [null, {
+        updateOn: 'blur',
+        validators: [
+          Validators.required
+        ]
+      }],
+      autocomplete: [null, {
+        updateOn: 'blur',
+        validators: [
+          Validators.required
+        ]
+      }],
+      select: [null, {
+        updateOn: 'change',
+        validators: [
+          Validators.required
+        ]
+      }],
+      checkboxes: [null, {
+        updateOn: 'change',
+        validators: [
+          Validators.required
+        ]
+      }],
+      radios: [null, {
+        updateOn: 'change',
+        validators: [
+          Validators.required
+        ]
+      }],
+      date: [null, {
+        updateOn: 'change',
+        validators: [
+          Validators.required
+        ]
+      }],
+      dateRange: [null, {
+        updateOn: 'change',
+        validators: [
+          Validators.required
+        ]
+      }]
+    });
+  }
 }

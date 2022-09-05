@@ -33,6 +33,22 @@
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
-    <app-button class="table__button">+</app-button>
+    <div class="table_button">
+      <app-button (click)="CheckIn()">+</app-button>
+    </div>
+  </div>
+
+  <div class="checkInForm" *ngIf="newCheckIn">
+    <form>
+      <app-form-field label="Placas" [required]="true" [control]="form.controls['input']" [isInline]="true"
+        [patternError]="regexError.number">
+        <app-input formControlName="input"></app-input>
+      </app-form-field>
+
+      <app-form-field label="Radios" [required]="true" [control]="form.controls['radios']" [isInline]=isInline>
+        <app-radios formControlName="radios" [items]="typeRadios"></app-radios>
+      </app-form-field>
+
+    </form>
   </div>
 </div>

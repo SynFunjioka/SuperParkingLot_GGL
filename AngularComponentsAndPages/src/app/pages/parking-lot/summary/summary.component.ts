@@ -7,6 +7,9 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SummaryComponent implements OnInit {
 
+  //Table data
+  displayedColumns: string[] = ["plate", "time", "type", "import"]
+  items: string[] = [];
   constructor() { }
 
   ngOnInit(): void {
