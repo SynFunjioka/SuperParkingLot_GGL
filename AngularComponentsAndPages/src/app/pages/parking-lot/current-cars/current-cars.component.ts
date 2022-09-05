@@ -44,8 +44,10 @@ export class CurrentCarsComponent implements OnInit {
     });
 
     this.parkingLotService.getRecords().subscribe(res => {
+      if (!res) return;
       console.log("Records:", res);
 
+      let arr: CheckIn[] = [];
       res.forEach(element => {
         let carData: CarDataB = this.carData.filter(carID => carID.id == element.fk_CarData)[0];
         let carType: CostModel = this.carTypes.filter(type => type.id == carData.type)[0];
@@ -57,15 +59,19 @@ export class CurrentCarsComponent implements OnInit {
 
         let checkIn: CheckIn = {
           ...element,
-          car: newCar,
-          checkInTime: '',
-          checkOutTime: null
+          checkInTime: new Date(element.checkInTime),
+          checkOutTime: -62135573004000 != new Date("0001-01-01T00:00:00").getTime() && element.checkOutTime ? new Date(element.checkOutTime) : null,
+          car: newCar
         }
 
-        this.checkInF.push(checkIn);
+        console.log(checkIn.checkInTime);
+        if (checkIn.checkOutTime) console.log(new Date(checkIn.checkOutTime).getTime());
+        //console.log("Front end data:", checkIn)
+        arr.push(checkIn);
         //this.checkInF = of
       })
       this.checkIn = res;
+      this.checkInF = arr;
       console.log("Front end data:", this.checkInF)
       //console.log("Records:", this.checkIn);
 

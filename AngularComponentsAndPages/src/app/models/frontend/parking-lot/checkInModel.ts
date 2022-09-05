@@ -3,8 +3,8 @@ import { CostModel } from "..";
 export interface CheckIn {
   id: number;
   car: CarData;
-  checkInTime: string;
-  checkOutTime: string | null;
+  checkInTime: Date;
+  checkOutTime: Date | null;
   totalCost: number | null;
 }
 

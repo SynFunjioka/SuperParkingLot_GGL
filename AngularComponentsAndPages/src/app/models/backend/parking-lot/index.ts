@@ -1,8 +1,8 @@
 export interface CheckIn {
   id: number,
   fk_CarData: number;
-  checkInTime: string;
-  checkOutTime: string | null;
+  checkInTime: Date;
+  checkOutTime: Date | null;
   totalCost: number | null;
 }
 
