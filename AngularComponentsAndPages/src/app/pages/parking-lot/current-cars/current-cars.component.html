@@ -1,23 +1,26 @@
 <div class="app-page">
   <div class="table">
-    <table mat-table [dataSource]="checkInF" class="mat-elevation-z8">
+    <div *ngFor="let item of checkInF$ | async;">
+      <app-button></app-button>
+    </div>
+    <table mat-table [dataSource]="checkInF$" class="mat-elevation-z8">
 
       <!-- Position Column -->
       <ng-container matColumnDef="plate">
         <th mat-header-cell *matHeaderCellDef> Placa </th>
-        <td mat-cell *matCellDef="let element"> {{element?.car.licensePlate}} </td>
+        <td mat-cell *matCellDef="let element"> {{element.car.licensePlate}} </td>
       </ng-container>
 
       <!-- Name Column -->
       <ng-container matColumnDef="checkIn">
         <th mat-header-cell *matHeaderCellDef> Hora de entrada </th>
-        <td mat-cell *matCellDef="let element"> {{element?.checkInTime.toLocaleTimeString()}} </td>
+        <td mat-cell *matCellDef="let element"> {{element.checkInTime.toLocaleTimeString()}} </td>
       </ng-container>
 
       <!-- Weight Column -->
       <ng-container matColumnDef="type">
         <th mat-header-cell *matHeaderCellDef> Tipo </th>
-        <td mat-cell *matCellDef="let element"> {{element?.car.type.nameType}} </td>
+        <td mat-cell *matCellDef="let element"> {{element.car.type.nameType}} </td>
       </ng-container>
 
       <!-- Symbol Column -->
@@ -40,13 +43,13 @@
 
   <div class="checkInForm" *ngIf="newCheckIn">
     <form>
-      <app-form-field label="Placas" [required]="true" [control]="form.controls['input']" [isInline]="true"
-        [patternError]="regexError.number">
+      <app-form-field label="Placas" [required]="true" [control]="form.controls['input']" [isInline]="true">
         <app-input formControlName="input"></app-input>
       </app-form-field>
 
-      <app-form-field label="Radios" [required]="true" [control]="form.controls['radios']" [isInline]=isInline>
-        <app-radios formControlName="radios" [items]="typeRadios"></app-radios>
+      <app-form-field *ngIf="radio$ | async as radio" label="Radios" [required]="true"
+        [control]="form.controls['radios']" [isInline]=isInline>
+        <app-radios formControlName="radios" [items]="radio"></app-radios>
       </app-form-field>
 
     </form>

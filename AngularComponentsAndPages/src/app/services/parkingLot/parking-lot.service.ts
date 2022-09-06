@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, throwError, of } from 'rxjs';
 import { catchError, map, retry } from 'rxjs/operators';
 
-import { CostModel, CarData, CheckIn } from '@app/models/frontend';
+import { CostModel, CarData, CheckIn, ControlItem } from '@app/models/frontend';
 import { CheckIn as CheckInB, CarData as CarDataB } from '@app/models/backend';
 
 
@@ -20,6 +20,8 @@ export class ParkingLotService {
   //Frontend
   records!: CheckIn[];
 
+  carTypesRadio!: ControlItem[];
+
   constructor(private httpC: HttpClient) {
     this.getTypes().subscribe(res => {
       this.carTypes = res;
@@ -33,9 +35,9 @@ export class ParkingLotService {
       this.checkIn = res;
     });
 
-    this.setFormat().subscribe(res => {
-      this.records = res;
-    })
+    // this.setFormat().subscribe(res => {
+    //   this.records = res;
+    // })
   }
 
   ngOnInit() {
@@ -81,5 +83,24 @@ export class ParkingLotService {
       return of(res);
     });
     return dataFormatted;
+  }
+
+  setControlRadio(): Observable<ControlItem[]> {
+    let items$: Observable<ControlItem[]> = new Observable;
+    this.getTypes().pipe(map(m => {
+      let items: ControlItem[] = [];
+      m.forEach(type => {
+        items.push({
+          value: type.id,
+          label: type.nameType
+        })
+      });
+      return items;
+    })).subscribe(res => {
+      console.log("Radio values:", res);
+      items$ = of(res);
+    });
+
+    return items$;
   }
 }

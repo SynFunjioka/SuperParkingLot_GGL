@@ -1,5 +1,5 @@
 export interface CostModel {
   id: number;
-  nameTyype: string;
+  nameType: string;
   price: number;
 }

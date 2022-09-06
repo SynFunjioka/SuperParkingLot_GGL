@@ -36,7 +36,7 @@ export class CurrentCarsComponent implements OnInit {
     // { car: { id: 4, licensePlate: "SCV-SD2", type: "Residencial" }, checkInHour: new Date().toTimeString(), checkOutHour: null, amount: null },
   ];
 
-  checkInF$!: Subscription;
+  checkInF$: Observable<CheckIn[]> = new Observable;
   checkInF!: CheckIn[];
 
   carData: CarDataB[] = [];
@@ -44,10 +44,12 @@ export class CurrentCarsComponent implements OnInit {
 
   displayedColumns: string[] = ["plate", "checkIn", "type", "actions"];
 
+  radio$: Observable<ControlItem[]> = new Observable;
+
   constructor(private parkingLotService: ParkingLotService, private store: Store<fromRoot.State>,
     private fb: FormBuilder, private notification: NotificationService
   ) {
-    setTimeout(() => { }, 500);
+
 
   }
 
@@ -56,15 +58,15 @@ export class CurrentCarsComponent implements OnInit {
   }
 
   ngOnInit() {
-    //this.checkInF = this.parkingLotService.records;
+    this.checkInF$ = this.parkingLotService.setFormat();
+    this.radio$ = this.parkingLotService.setControlRadio();
 
     this.form = this.fb.group({
       input: [null, {
         updateOn: 'blur',
         validators: [
           Validators.required,
-          Validators.minLength(3),
-          Validators.pattern(regex.number)
+          Validators.minLength(3)
         ]
       }],
       password: [null, {
